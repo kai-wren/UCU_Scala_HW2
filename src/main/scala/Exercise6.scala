@@ -7,26 +7,28 @@ object Exercise6 extends App {
     def length(): Int
     def last(): A
     def addLeft[B >: A](addValue: B): lListInterface[B] = lList(addValue, this)
-    def remove(): lListInterface[A] = ref
+    def removeLeft(): lListInterface[A] = ref
     def reverse[B >: A](list: lListInterface[B] = NilList): lListInterface[B] = list match {
-        case NilList => ref.reverse(list.addLeft(value))
         case _ if (ref == NilList) => list.addLeft(value)
         case _ => ref.reverse(list.addLeft(value))
       }
-    def addRight[B >: A](addValue: B, list: lListInterface[B] = this): lListInterface[B] = list match {
-//      case NilList => list
-      case _ if (ref == NilList) => list
-//      case _ => ref.addRight(addValue, list.addLeft(value))
-      case _ => list.addLeft(value).addRight(addValue, list.ref)
+    def addRight[B >: A](addValue: B): lListInterface[B] = this match {
+      case NilList => NilList.addLeft(addValue)
+      case _ => ref.addRight(addValue).addLeft(value)
+    }
+
+    def removeRight(): lListInterface[A] = this match {
+      case _ if (ref.ref == NilList) =>  NilList.addLeft(value)
+      case _ => ref.removeRight().addLeft(value)
     }
 
   }
 
   case class lList[+A] (val value: A, val ref: lListInterface[A]) extends lListInterface[A] {
 
-    override def toString = s"head: $value, next: $ref"
+    override def toString = "value: " + value + " ref: " + ref
 
-    override def length(): Int = 1 + ref.length
+    override def length(): Int = 1 + ref.length()
 
     override def last(): A = ref match {
       case NilList => value
@@ -45,32 +47,46 @@ object Exercise6 extends App {
 
     override def last(): Nothing = throw new NoSuchElementException("No value")
 
-    override def remove(): lListInterface[Nothing] = throw new UnsupportedOperationException("No reference")
+    override def removeLeft(): lListInterface[Nothing] = throw new UnsupportedOperationException("Nothing to remove")
 
-    override def reverse[B >: Nothing](list: lListInterface[B]): lListInterface[B] = throw new UnsupportedOperationException("No reference")
+    override def reverse[B >: Nothing](list: lListInterface[B]): lListInterface[B] = throw new UnsupportedOperationException("Nothing to reverse")
+
+    override def removeRight(): lListInterface[Nothing] = throw new UnsupportedOperationException("Nothing to remove")
   }
 
 
-    val c1 = NilList.addLeft(1)
-    val c2 = c1.addLeft(2)
-    val c3 = c2.addLeft(3)
-    val c4 = c3.addLeft(4)
-    val n3 = c4.remove()
-    val r4 = c4.reverse()
-    val c5 = c4.addRight(5)
-    println(c1)
-    println(c2)
-    println(c3)
-    println(c4)
-    println(n3)
-    println(r4)
-    println(c5)
+    //checking result
+    val l5 = NilList.addLeft(1).addRight(2).addLeft(3).addRight(4).addLeft(5)
+    val l4r = l5.removeRight()
+    val l4l = l5.removeLeft()
+    val l6r = l5.addRight(6)
+    val l6l = l5.addLeft(6)
+    val rev5 = l5.reverse()
 
+    //printing lists
+    println("l5 - " + l5)
+    println("l4r - " + l4r)
+    println("l4l - " + l4l)
+    println("rev5 - " + rev5)
+    println("l6r - " + l6r)
+    println("l6l - " + l6l)
 
-    assert(c4.length() == 4)
+    //check length
+    assert(l5.length() == 5)
+    assert(l4r.length() == 4)
+    assert(l4l.length() == 4)
+    assert(l6r.length() == 6)
+    assert(l6l.length() == 6)
+    assert(rev5.length() == 5)
 
-    assert(c4.last() == 1)
-    assert(r4.last() == 4)
+    //check last element of different lists to check other methods
+    assert(l5.last() == 4)
+    assert(l4r.last() == 2)
+    assert(l4l.last() == 4)
+    assert(rev5.last() == 5)
+    assert(l6r.last() == 6)
+    assert(l6l.last() == 4)
+
 
 
 }
