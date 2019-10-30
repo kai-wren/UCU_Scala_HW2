@@ -13,4 +13,4 @@ CREATE TABLE salesOrder (docID INT, custID VARCHAR(20), amount FLOAT, currency V
 
 
 //command to run:
-scala -classpath hw2.jar Exercise1
+scala -classpath .\target\scala-2.13\hw2.jar Exercise1
